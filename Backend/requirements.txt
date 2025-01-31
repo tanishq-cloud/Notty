@@ -10,7 +10,7 @@ sendgrid
 pandas
 matplotlib
 seaborn
-jwt
+PyJWT
 passlib
 bcrypt 
 
