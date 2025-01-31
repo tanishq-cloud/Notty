@@ -1,0 +1,17 @@
+fastapi[standard]
+uvicorn
+pydantic
+SQLAlchemy
+streamlit
+schedule
+apscheduler
+requests
+sendgrid
+pandas
+matplotlib
+seaborn
+jwt
+passlib
+bcrypt 
+
+ 
