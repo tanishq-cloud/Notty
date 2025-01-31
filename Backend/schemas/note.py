@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class NoteCreateDTO(BaseModel):
-    user_id:int
+    # user_id:int
     title: str
     body: str
 

@@ -1,19 +1,21 @@
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from passlib.context import CryptContext
 import jwt
 from datetime import datetime, timedelta
 import os
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 
 from models.model import User
+from db import database
 
 SECRET_KEY = os.getenv("SECRET_KEY", "mysecretkey")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 class UserDAO:
     def __init__(self, db: Session):
         self.db = db
@@ -65,3 +67,25 @@ class UserDAO:
             return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         except jwt.PyJWTError as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Token generation error: {str(e)}")
+    def decode_access_token(self, token: str):
+        """Decodes and validates the JWT token"""
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            return payload
+        except jwt.PyJWTError:
+            return None
+
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)) -> User:
+    """Dependency that fetches the current user based on the provided token."""
+    user_dao = UserDAO(db)
+    
+    payload = user_dao.decode_access_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    db_user = user_dao.get_user_by_username(payload.get("sub"))
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return db_user
