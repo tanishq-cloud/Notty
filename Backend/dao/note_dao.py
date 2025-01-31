@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
 from models.model import Note
-
  
 class NoteDAO:
     def __init__(self, db: Session):
