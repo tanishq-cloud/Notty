@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Note } from '@/interface/Note';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import RichNote from './Editor/view-create';
 
 interface NotesCardViewProps {
   notes: Note[];
@@ -9,24 +11,64 @@ interface NotesCardViewProps {
 }
 
 export default function NotesCardView({ notes, onView, onEdit }: NotesCardViewProps) {
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [isViewMode, setIsViewMode] = useState(false);
+
+  const handleCloseForm = () => {
+    setSelectedNote(null);
+    setIsViewMode(false);
+  };
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {notes.map((note) => (
-        <Card key={note.noteid} className="shadow-md">
-          <CardHeader>
-            <CardTitle>Note {note.noteid}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600">
-              {note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body}
-            </p>
-            <div className="flex justify-end gap-2 mt-2">
-              <Button onClick={() => onView(note)} variant="outline">View</Button>
-              <Button onClick={() => onEdit(note)}>Edit</Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    <div>
+      {selectedNote && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <RichNote
+            note={selectedNote}
+            onClose={handleCloseForm}
+            isView={isViewMode}
+          />
+        </div>
+      )}
+      
+      {/* Render the list of notes */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {notes.map((note) => (
+          <Card key={`note-${note.note_id}`} className="shadow-md">
+            <CardHeader>
+              <CardTitle>Note {note.note_id} : {note.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600 mb-2">
+                {note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body}
+              </p>
+              <div className="flex justify-end gap-2">
+                {/* View Button */}
+                <Button
+                  onClick={() => {
+                    setSelectedNote(note);
+                    setIsViewMode(true);
+                    onView(note);
+                  }}
+                  variant="outline"
+                >
+                  View
+                </Button>
+                {/* Edit Button */}
+                <Button
+                  onClick={() => {
+                    setSelectedNote(note);
+                    setIsViewMode(false);
+                    onEdit(note);
+                  }}
+                >
+                  Edit
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

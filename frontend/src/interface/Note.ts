@@ -1,8 +1,9 @@
 export interface Note {
-    authored: number;
+    author: number;
+    title: string; 
     body: string;
     modified: string;
     created: string;
-    noteid: number;
+    note_id: number;
   }
   

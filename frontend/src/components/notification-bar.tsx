@@ -1,4 +1,13 @@
+import RichNote from "./Editor/view-create";
+import { Button } from "./ui/button";
+import { useState } from "react";
 function NotificationBar(){
+  const [isCreatingNote, setIsCreatingNote] = useState(false);
+
+  const handleCloseForm = () => {
+    setIsCreatingNote(false);
+  };
+  
     return (
         <>
         <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
@@ -16,7 +25,11 @@ function NotificationBar(){
                      
         
                       <div className="border-l border-gray-200 pl-6 sm:border-0 sm:pl-0">
-                      
+                      <Button onClick={() => setIsCreatingNote(true)}>Create New Note</Button>
+
+                      {isCreatingNote && (
+        <RichNote onClose={handleCloseForm} />
+      )}
                       </div>
                     </div>
                   </div>

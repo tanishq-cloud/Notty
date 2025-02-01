@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getNotes, updateNote, deleteNote } from '@/services/notes.service';
-import { Note } from '@/interface/Note'
+import { getNotes, updateNote, deleteNote, createNote } from '@/services/notes.service';
+import { Note } from '@/interface/Note';
 
 export const useNotes = () => {
   const queryClient = useQueryClient();
@@ -8,6 +8,13 @@ export const useNotes = () => {
   const { data: notes, isLoading, isError } = useQuery({
     queryKey: ['notes'],
     queryFn: getNotes,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (newNote: Note) => createNote(newNote),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+    },
   });
 
   const updateMutation = useMutation({
@@ -25,5 +32,5 @@ export const useNotes = () => {
     },
   });
 
-  return { notes, isLoading, isError, updateMutation, deleteMutation };
+  return { notes, isLoading, isError, createMutation, updateMutation, deleteMutation };
 };

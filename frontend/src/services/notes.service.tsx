@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Note } from '@/interface/Note'
-const API_BASE_URL = 'http://localhost:4500/notes';
+const API_BASE_URL = 'http://localhost:4500';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,6 +8,11 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+export const createNote = async ( createdData: Partial<Note>) => {
+  const response = await api.post(`/notes/`, createdData);
+  return response.data;
+};
 
 export const getNotes = async () => {
   const response = await api.get('/notes');
