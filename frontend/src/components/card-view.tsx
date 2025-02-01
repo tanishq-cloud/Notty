@@ -1,8 +1,13 @@
-import { useState } from 'react';
-import { Note } from '@/interface/Note';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import RichNote from './Editor/view-create';
+import { useState } from "react";
+import { Note } from "@/interface/Note";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import RichNote from "./Editor/view-create";
+
+const convertHtmlToText = (html: string) => {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
+};
 
 interface NotesCardViewProps {
   notes: Note[];
@@ -10,7 +15,11 @@ interface NotesCardViewProps {
   onEdit: (note: Note) => void;
 }
 
-export default function NotesCardView({ notes, onView, onEdit }: NotesCardViewProps) {
+export default function NotesCardView({
+  notes,
+  onView,
+  onEdit,
+}: NotesCardViewProps) {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isViewMode, setIsViewMode] = useState(false);
 
@@ -30,20 +39,22 @@ export default function NotesCardView({ notes, onView, onEdit }: NotesCardViewPr
           />
         </div>
       )}
-      
-      {/* Render the list of notes */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {notes.map((note) => (
           <Card key={`note-${note.note_id}`} className="shadow-md">
             <CardHeader>
-              <CardTitle>Note {note.note_id} : {note.title}</CardTitle>
+              <CardTitle>
+                Note {note.note_id} : {note.title}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600 mb-2">
-                {note.body.length > 100 ? note.body.substring(0, 100) + '...' : note.body}
+                {convertHtmlToText(note.body).length > 100
+                  ? convertHtmlToText(note.body).substring(0, 100) + "..."
+                  : convertHtmlToText(note.body)}
               </p>
               <div className="flex justify-end gap-2">
-                {/* View Button */}
                 <Button
                   onClick={() => {
                     setSelectedNote(note);
@@ -54,7 +65,7 @@ export default function NotesCardView({ notes, onView, onEdit }: NotesCardViewPr
                 >
                   View
                 </Button>
-                {/* Edit Button */}
+
                 <Button
                   onClick={() => {
                     setSelectedNote(note);

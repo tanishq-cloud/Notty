@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Note } from '@/interface/Note'
-const API_BASE_URL = 'http://localhost:4500';
+const API_BASE_URL = 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -10,7 +10,7 @@ const api = axios.create({
 });
 
 export const createNote = async ( createdData: Partial<Note>) => {
-  const response = await api.post(`/notes/`, createdData);
+  const response = await api.post(`/notes`, createdData);
   return response.data;
 };
 
@@ -20,7 +20,9 @@ export const getNotes = async () => {
 };
 
 export const updateNote = async (noteId: number, updatedData: Partial<Note>) => {
+  console.log(`update note data noteid: ${noteId} and updateData: ${JSON.stringify(updatedData)}`)
   const response = await api.put(`/notes/${noteId}`, updatedData);
+  console.log(`response: ${JSON.stringify(response)}`)
   return response.data;
 };
 
