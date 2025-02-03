@@ -14,6 +14,8 @@ from db import database
 SECRET_KEY = os.getenv("SECRET_KEY", "mysecretkey")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+REFRESH_TOKEN_EXPIRE_DAYS=1
+REFRESH_SECRET_KEY="Notes_Batman"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -78,7 +80,23 @@ class UserDAO:
         except jwt.PyJWTError:
             return None
 
-
+    def create_refresh_token(self, data: dict, expires_delta: timedelta = timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)):
+        """Generate a refresh token"""
+        to_encode = data.copy()
+        expire = datetime.utcnow() + expires_delta
+        to_encode.update({"exp": expire})
+        return jwt.encode(to_encode, REFRESH_SECRET_KEY, algorithm=ALGORITHM)
+    
+    def verify_refresh_token(self, token: str):
+        """Decode and verify refresh token"""
+        try:
+            # payload = jwt.decode(token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
+            return jwt.decode(token, REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
+        except jwt.ExpiredSignatureError as e:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token expired") from e
+        except jwt.InvalidTokenError as e:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token") from e
+        
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)) -> User:
     """Dependency that fetches the current user based on the provided token."""
     user_dao = UserDAO(db)

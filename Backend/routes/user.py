@@ -9,7 +9,7 @@ import os
 
 from db import database
 from dao.user_dao import UserDAO
-from schemas.user import UserCreateDTO
+from schemas.user import RefreshTokenDTO, UserCreateDTO
 
 router = APIRouter()
 
@@ -47,11 +47,32 @@ async def token(user: OAuth2PasswordRequestForm = Depends(), db: async_session =
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
 
         access_token = user_dao.create_access_token({"sub": user_retrieved.username})
-
-        return {"access_token": access_token, "token_type": "bearer","username":user_retrieved.username,"full_name":user_retrieved.full_name}
+        refresh_token = user_dao.create_refresh_token({"user": user_retrieved.username})
+        print("refresh_token",refresh_token)
+        return {"access_token": access_token, "refresh_token":refresh_token,"token_type": "bearer","user_id":user_retrieved.id,"username":user_retrieved.username,"full_name":user_retrieved.full_name}
 
     except jwt.PyJWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token generation failed") from e
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal Server Error: {str(e)}") from e
+
+
+@router.post("/refresh/")
+async def refresh_token(refresh_data: RefreshTokenDTO, db: Session = Depends(database.get_db)):
+    """Generate a new access token using a refresh token"""
+    user_dao = UserDAO(db)
+
+    try:
+        payload = user_dao.verify_refresh_token(refresh_data.refresh_token)
+        username = payload.get("user")
+
+        if not username:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+
+        new_access_token = user_dao.create_access_token({"user": username})
+
+        return {"access_token": new_access_token, "token_type": "bearer"}
+    
+    except HTTPException as e:
+        raise e
