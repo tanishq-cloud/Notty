@@ -1,12 +1,24 @@
+import { Suspense, useState } from "react";
 import RichNote from "./Editor/view-create";
 import { Button } from "./ui/button";
-import { useState } from "react";
-
+import { useNavigate } from "@tanstack/react-router";
+//import { isAuthenticated } from "@/services/notes.service";
+import { useAuth } from "@/hooks/use-auth";
+import { triggerAuthChange } from "@/hooks/use-auth"; 
 function NotificationBar() {
   const [isCreatingNote, setIsCreatingNote] = useState(false);
+  const navigate = useNavigate();
+  const authenticated = useAuth(); // Use the custom hook
 
   const handleCloseForm = () => {
     setIsCreatingNote(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user_id");
+    triggerAuthChange();
+    navigate({ to: "/login" });
   };
 
   return (
@@ -22,10 +34,24 @@ function NotificationBar() {
             </div>
 
             <div className="flex items-center justify-between space-x-6 w-full sm:w-auto">
-              <div className="border-l border-gray-200 pl-6 sm:border-0 sm:pl-0">
-                <Button onClick={() => setIsCreatingNote(true)}>
-                  Create New Note
-                </Button>
+              {authenticated && (
+                <div className="border-l border-gray-200 pl-6 sm:border-0 sm:pl-0">
+                  <Button onClick={() => setIsCreatingNote(true)}>
+                    Create New Note
+                  </Button>
+                </div>
+              )}
+
+              <div className="flex items-center space-x-4">
+                {authenticated ? (
+                  <Button variant="destructive" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                ) : (
+                  <Button onClick={() => navigate({ to: "/login" })}>
+                    Login
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -43,4 +69,11 @@ function NotificationBar() {
   );
 }
 
-export default NotificationBar;
+// Wrap the component in Suspense
+export default function SuspendedNotificationBar() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NotificationBar />
+    </Suspense>
+  );
+}

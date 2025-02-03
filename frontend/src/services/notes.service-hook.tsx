@@ -18,7 +18,7 @@ export const useNotes = () => {
         },
         onError: (error) => {
             console.error('Failed to create note:', error);
-            // Handle error (e.g., show toast notification)
+            
         }
     });
 

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import RichNote from "./Editor/view-create";
 
+
 const convertHtmlToText = (html: string) => {
   const doc = new DOMParser().parseFromString(html, "text/html");
   return doc.body.textContent || "";
@@ -80,6 +81,8 @@ export default function NotesCardView({
           </Card>
         ))}
       </div>
+
+      
     </div>
   );
 }

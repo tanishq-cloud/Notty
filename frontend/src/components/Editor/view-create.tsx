@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import RichTextEditor from "@/components/Editor/rich-text-edit";
 import { Input } from "@/components/ui/input";
 import { Note } from "@/interface/Note";
 import { useNotes } from "@/services/notes.service-hook";
+import { toast } from "react-toastify";
 
 export default function RichNote({
   note,
@@ -17,6 +18,21 @@ export default function RichNote({
   const { createMutation, updateMutation } = useNotes();
   const [title, setTitle] = useState(note?.title || "");
   const [body, setBody] = useState(note?.body || "Start writing here....");
+  
+  // Track original values for comparison
+  const [originalTitle, setOriginalTitle] = useState(note?.title || "");
+  const [originalBody, setOriginalBody] = useState(note?.body || "Start writing here....");
+
+  // Update original values when note prop changes
+  useEffect(() => {
+    if (note) {
+      setOriginalTitle(note.title);
+      setOriginalBody(note.body);
+    }
+  }, [note]);
+
+  // Check if there are any changes
+  const hasChanges = title !== originalTitle || body !== originalBody;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,9 +55,11 @@ export default function RichNote({
         noteId: note.note_id,
         updatedData: noteData,
       });
+      toast.success("Note updated successfully!.");
       console.log("Mutation completed");
     } else {
       createMutation.mutate(noteData);
+      toast.success("New Note created successfully!.");
     }
   };
 
@@ -72,7 +90,11 @@ export default function RichNote({
             {!isView && (
               <Button
                 type="submit"
-                disabled={createMutation.isPending || updateMutation.isPending}
+                disabled={
+                  createMutation.isPending || 
+                  updateMutation.isPending || 
+                  (note && !hasChanges) // Disable update button when there are no changes
+                }
               >
                 {createMutation.isPending || updateMutation.isPending
                   ? note
