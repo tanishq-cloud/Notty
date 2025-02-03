@@ -22,11 +22,11 @@ class UserDAO:
         self.db = db
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    async def create_user(self, username: str, password: str):
+    async def create_user(self, username: str, password: str,full_name:str):
         """Creates a new user in the database"""
         try:
             hashed_password = self.pwd_context.hash(password)
-            user = User(username=username, hashed_password=hashed_password)
+            user = User(username=username, hashed_password=hashed_password,full_name=full_name)
             
             self.db.add(user)
             await self.db.commit()

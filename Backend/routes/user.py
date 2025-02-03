@@ -19,7 +19,7 @@ async def create_user(user_data: UserCreateDTO, db: async_session = Depends(data
     """Registers a new user"""
     try:
         user_dao = UserDAO(db)
-        created_user = await user_dao.create_user(user_data.username, user_data.password)
+        created_user = await user_dao.create_user(user_data.username, user_data.password,user_data.full_name)
 
         if created_user is None:
             raise HTTPException(
@@ -48,7 +48,7 @@ async def token(user: OAuth2PasswordRequestForm = Depends(), db: async_session =
 
         access_token = user_dao.create_access_token({"sub": user_retrieved.username})
 
-        return {"access_token": access_token, "token_type": "bearer"}
+        return {"access_token": access_token, "token_type": "bearer","username":user_retrieved.username,"full_name":user_retrieved.full_name}
 
     except jwt.PyJWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token generation failed") from e
