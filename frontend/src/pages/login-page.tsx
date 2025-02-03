@@ -73,6 +73,17 @@ function LoginPage() {
           >
             {isLoading ? 'Signing in...' : 'Sign in'}
           </Button>
+
+          <div className="text-center text-sm">
+              <span className="text-gray-500">Don't have an account? </span>
+              <Button 
+                variant="link" 
+                className="p-0 h-auto font-semibold"
+                onClick={() => navigate({ to: '/register' })}
+              >
+                Sign Up
+              </Button>
+            </div>
         </form>
       </div>
     </div>
