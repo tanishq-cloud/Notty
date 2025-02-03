@@ -24,8 +24,8 @@ app.add_middleware(
 )
 @app.on_event("startup")
 async def start_up_event():
-    create_table()
-    
+    await create_table()
+
 app.include_router(note.router,tags=["notes"])
 app.include_router(user.router,tags=["User"])
 

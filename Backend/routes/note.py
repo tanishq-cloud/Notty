@@ -15,14 +15,14 @@ async def create_note(note: NoteCreateDTO, current_user: User = Depends(user_dao
     """Creates a new note linked to the current user"""
     try:
         note_dao = NoteDAO(db)
-        new_note = note_dao.create_note(
+        new_note = await note_dao.create_note(
             title=note.title,
             body=note.body,
             user_id=current_user.id
         )
         return new_note
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating note")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating note") from e
 
 
 @router.get("/all", response_model=List[NoteResponseDTO])
@@ -30,7 +30,7 @@ async def get_notes(current_user: User = Depends(user_dao.get_current_user), db:
     """Fetches all notes created by the current user"""
     try:
         note_dao = NoteDAO(db)
-        notes = note_dao.get_notes_by_user(current_user.id)
+        notes = await note_dao.get_notes_by_user(current_user.id)
         # if not notes:
         #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No notes found for the user")
         return notes
@@ -47,7 +47,7 @@ async def get_note(note_id: int, current_user: User = Depends(user_dao.get_curre
     """Fetches a note by its ID"""
     try:
         note_dao = NoteDAO(db)
-        note = note_dao.get_note_by_id(note_id)
+        note =await note_dao.get_note_by_id(note_id)
         if note is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
         if note.user_id != current_user.id:
@@ -62,13 +62,13 @@ async def update_note(note_id: int, note: NoteCreateDTO, current_user: User = De
     """Updates a note's title or body"""
     try:
         note_dao = NoteDAO(db)
-        existing_note = note_dao.get_note_by_id(note_id)
+        existing_note = await note_dao.get_note_by_id(note_id)
         if existing_note is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
         if existing_note.user_id != current_user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this note")
         
-        updated_note = note_dao.update_note(
+        updated_note = await note_dao.update_note(
             note_id=note_id,
             title=note.title,
             body=note.body
@@ -83,13 +83,13 @@ async def delete_note(note_id: int, current_user: User = Depends(user_dao.get_cu
     """Deletes a note by its ID"""
     try:
         note_dao = NoteDAO(db)
-        note = note_dao.get_note_by_id(note_id)
+        note = await note_dao.get_note_by_id(note_id)
         if note is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
         if note.user_id != current_user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this note")
         
-        note_dao.delete_note(note_id)
+        await note_dao.delete_note(note_id)
         return {"message": "Note successfully deleted"}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error deleting note")

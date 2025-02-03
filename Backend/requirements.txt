@@ -13,5 +13,4 @@ seaborn
 PyJWT
 passlib
 bcrypt 
-
- 
+aiosqlite 

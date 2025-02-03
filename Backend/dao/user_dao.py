@@ -1,4 +1,5 @@
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from passlib.context import CryptContext
@@ -21,42 +22,44 @@ class UserDAO:
         self.db = db
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    def create_user(self, username: str, password: str):
+    async def create_user(self, username: str, password: str):
         """Creates a new user in the database"""
         try:
             hashed_password = self.pwd_context.hash(password)
             user = User(username=username, hashed_password=hashed_password)
             
             self.db.add(user)
-            self.db.commit()
-            self.db.refresh(user)
+            await self.db.commit()
+            await self.db.refresh(user)
             
             return user
 
         except IntegrityError:
-            self.db.rollback()
-            return None  # Returning None to handle duplicate username errors
+            await self.db.rollback()
+            return None 
 
         except SQLAlchemyError as e:
-            self.db.rollback()
+            await self.db.rollback()
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error: {str(e)}")
 
-    def get_user_by_username(self, username: str):
+    async def get_user_by_username(self, username: str):
         """Retrieves a user by username"""
         try:
-            return self.db.query(User).filter(User.username == username).first()
+            # u= self.db.query(User).filter(User.username == username).first()
+            result = await self.db.execute( select(User).filter(User.username == username))
+            return result.scalars().first()
         except SQLAlchemyError as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error: {str(e)}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error: {str(e)}") from e
 
-    def authenticate_user(self, username: str, password: str):
+    async def authenticate_user(self, username: str, password: str):
         """Authenticates a user by verifying password"""
         try:
-            user = self.get_user_by_username(username)
+            user = await self.get_user_by_username(username)
             if user and self.pwd_context.verify(password, user.hashed_password):
                 return user
             return None
         except SQLAlchemyError as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error: {str(e)}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Database error: {str(e)}") from e
 
     def create_access_token(self, data: dict, expires_delta: timedelta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
         """Generates a JWT access token"""
@@ -66,7 +69,7 @@ class UserDAO:
             to_encode.update({"exp": expire})
             return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         except jwt.PyJWTError as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Token generation error: {str(e)}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Token generation error: {str(e)}") from e
     def decode_access_token(self, token: str):
         """Decodes and validates the JWT token"""
         try:
@@ -76,7 +79,7 @@ class UserDAO:
             return None
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)) -> User:
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)) -> User:
     """Dependency that fetches the current user based on the provided token."""
     user_dao = UserDAO(db)
     
@@ -84,7 +87,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     
-    db_user = user_dao.get_user_by_username(payload.get("sub"))
+    db_user =await  user_dao.get_user_by_username(payload.get("sub"))
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     

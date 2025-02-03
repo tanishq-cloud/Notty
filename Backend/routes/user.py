@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import async_session
+
 import jwt
 import os
 
@@ -13,11 +15,11 @@ router = APIRouter()
 
 
 @router.post("/register/")
-async def create_user(user_data: UserCreateDTO, db: Session = Depends(database.get_db)):
+async def create_user(user_data: UserCreateDTO, db: async_session = Depends(database.get_db)):
     """Registers a new user"""
     try:
         user_dao = UserDAO(db)
-        created_user = user_dao.create_user(user_data.username, user_data.password)
+        created_user = await user_dao.create_user(user_data.username, user_data.password)
 
         if created_user is None:
             raise HTTPException(
@@ -34,13 +36,12 @@ async def create_user(user_data: UserCreateDTO, db: Session = Depends(database.g
             detail=f"Internal Server Error: {str(e)}",
         ) from e
 
-
 @router.post("/token/")
-async def token(user: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
+async def token(user: OAuth2PasswordRequestForm = Depends(), db: async_session = Depends(database.get_db)):
     """Generates a JWT token for authentication"""
     try:
         user_dao = UserDAO(db)
-        user_retrieved = user_dao.authenticate_user(user.username, user.password)
+        user_retrieved =await  user_dao.authenticate_user(user.username, user.password)
 
         if user_retrieved is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
