@@ -1,7 +1,7 @@
 import { Suspense, useState } from "react";
 import RichNote from "./Editor/view-create";
 import { Button } from "./ui/button";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 //import { isAuthenticated } from "@/services/notes.service";
 import { useAuth } from "@/hooks/use-auth";
 import { triggerAuthChange } from "@/hooks/use-auth"; 
@@ -29,7 +29,7 @@ function NotificationBar() {
             <div className="flex items-center space-x-2">
               <img src="/brain.svg" alt="Brain Icon" className="w-10 h-10" />
               <h1 className="text-xl font-bold text-gray-800 hover:text-gray-600 transition-colors">
-                Notty {/* ৻(  •̀ ᗜ •́  ৻) */}
+               <Link to={"/"}> Notty</Link>  {/* ৻(  •̀ ᗜ •́  ৻) */}
               </h1>
             </div>
 

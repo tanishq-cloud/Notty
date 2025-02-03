@@ -1,11 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function LandingPage() {
   const navigate = useNavigate();
-
+ const authenticated = useAuth();
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-full flex flex-col justify-center items-center px-4">
    
             
 
@@ -19,7 +20,7 @@ export default function LandingPage() {
             A simple and powerful note-taking app with a rich text editor. Stay organized and never forget an idea again.
           </p>
           <div className="mt-6 space-x-4">
-            <Button size="lg" onClick={() => navigate({ to: "/register" })}>
+            <Button size="lg" onClick={() => navigate({ to : authenticated ? "/list" : "/register"})}>
               Get Started
             </Button>
             

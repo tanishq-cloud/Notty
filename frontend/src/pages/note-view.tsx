@@ -25,13 +25,19 @@ export default function NotesPage() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">My Notes</h1>
-      <NotesCardView
-        notes={notes}
-        onView={handleViewNote}
-        onEdit={handleEditNote}
-      />
-    </div>
+    <div className=" justify-start min-h-screen p-4">
+  <h1 className="text-2xl font-bold mb-4 self-start">My Notes</h1>
+  
+  {notes.length === 0 ? (
+    <p className="text-gray-500 text-lg">No note has been created</p>
+  ) : (
+    <NotesCardView
+      notes={notes}
+      onView={handleViewNote}
+      onEdit={handleEditNote}
+    />
+  )}
+</div>
+
   );
 }

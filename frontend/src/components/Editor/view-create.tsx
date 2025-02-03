@@ -19,11 +19,11 @@ export default function RichNote({
   const [title, setTitle] = useState(note?.title || "");
   const [body, setBody] = useState(note?.body || "Start writing here....");
   
-  // Track original values for comparison
+  
   const [originalTitle, setOriginalTitle] = useState(note?.title || "");
   const [originalBody, setOriginalBody] = useState(note?.body || "Start writing here....");
 
-  // Update original values when note prop changes
+  
   useEffect(() => {
     if (note) {
       setOriginalTitle(note.title);
@@ -31,10 +31,10 @@ export default function RichNote({
     }
   }, [note]);
 
-  // Check if there are any changes
+  
   const hasChanges = title !== originalTitle || body !== originalBody;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isView) {
       return;
@@ -49,17 +49,20 @@ export default function RichNote({
       modified: new Date().toISOString(),
     };
 
-    if (note) {
-      console.log(noteData);
-      updateMutation.mutate({
-        noteId: note.note_id,
-        updatedData: noteData,
-      });
-      toast.success("Note updated successfully!.");
-      console.log("Mutation completed");
-    } else {
-      createMutation.mutate(noteData);
-      toast.success("New Note created successfully!.");
+    try {
+      if (note) {
+        await updateMutation.mutateAsync({
+          noteId: note.note_id,
+          updatedData: noteData,
+        });
+        toast.success("Note updated successfully!");
+      } else {
+        await createMutation.mutateAsync(noteData);
+        toast.success("New Note created successfully!");
+      }
+      onClose(); // Close modal after successful update or creation
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -93,7 +96,7 @@ export default function RichNote({
                 disabled={
                   createMutation.isPending || 
                   updateMutation.isPending || 
-                  (note && !hasChanges) // Disable update button when there are no changes
+                  (note && !hasChanges) 
                 }
               >
                 {createMutation.isPending || updateMutation.isPending

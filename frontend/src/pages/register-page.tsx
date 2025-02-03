@@ -37,7 +37,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex h-50 items-center justify-center">
       <div className="w-full max-w-md space-y-8 p-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Create an account</h1>
@@ -61,7 +61,7 @@ export default function RegisterPage() {
                 name="full_name"
                 type="text"
                 required
-                placeholder="Username"
+                placeholder="Full Name"
               />
             </div>
 
@@ -70,7 +70,7 @@ export default function RegisterPage() {
                 name="username"
                 type="text"
                 required
-                placeholder="Email address"
+                placeholder="Username"
               />
             </div>
 
