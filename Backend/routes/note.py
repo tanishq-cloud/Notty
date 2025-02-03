@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import async_session
+
 from models.model import  User
 from dao.note_dao import NoteDAO
 from schemas.note import NoteCreateDTO, NoteResponseDTO
@@ -11,7 +13,7 @@ router = APIRouter(prefix="/note")
 
 # Create a note
 @router.post("/", response_model=NoteResponseDTO)
-async def create_note(note: NoteCreateDTO, current_user: User = Depends(user_dao.get_current_user), db: Session = Depends(get_db)):
+async def create_note(note: NoteCreateDTO, current_user: User = Depends(user_dao.get_current_user), db: async_session = Depends(get_db)):
     """Creates a new note linked to the current user"""
     try:
         note_dao = NoteDAO(db)
@@ -26,7 +28,7 @@ async def create_note(note: NoteCreateDTO, current_user: User = Depends(user_dao
 
 
 @router.get("/all", response_model=List[NoteResponseDTO])
-async def get_notes(current_user: User = Depends(user_dao.get_current_user), db: Session = Depends(get_db)):
+async def get_notes(current_user: User = Depends(user_dao.get_current_user), db: async_session = Depends(get_db)):
     """Fetches all notes created by the current user"""
     try:
         note_dao = NoteDAO(db)
@@ -43,7 +45,7 @@ async def get_notes(current_user: User = Depends(user_dao.get_current_user), db:
 
 
 @router.get("/{note_id}", response_model=NoteResponseDTO)
-async def get_note(note_id: int, current_user: User = Depends(user_dao.get_current_user), db: Session = Depends(get_db)):
+async def get_note(note_id: int, current_user: User = Depends(user_dao.get_current_user), db: async_session = Depends(get_db)):
     """Fetches a note by its ID"""
     try:
         note_dao = NoteDAO(db)
@@ -58,7 +60,7 @@ async def get_note(note_id: int, current_user: User = Depends(user_dao.get_curre
 
 
 @router.put("/{note_id}", response_model=NoteResponseDTO)
-async def update_note(note_id: int, note: NoteCreateDTO, current_user: User = Depends(user_dao.get_current_user), db: Session = Depends(get_db)):
+async def update_note(note_id: int, note: NoteCreateDTO, current_user: User = Depends(user_dao.get_current_user), db: async_session = Depends(get_db)):
     """Updates a note's title or body"""
     try:
         note_dao = NoteDAO(db)
@@ -79,7 +81,7 @@ async def update_note(note_id: int, note: NoteCreateDTO, current_user: User = De
 
 
 @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_note(note_id: int, current_user: User = Depends(user_dao.get_current_user), db: Session = Depends(get_db)):
+async def delete_note(note_id: int, current_user: User = Depends(user_dao.get_current_user), db: async_session = Depends(get_db)):
     """Deletes a note by its ID"""
     try:
         note_dao = NoteDAO(db)
