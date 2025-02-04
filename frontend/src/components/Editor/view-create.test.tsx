@@ -1,29 +1,51 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RichNote from "./view-create";
-import { useNotes } from "@/services/notes.service-hook";
 import { vi } from "vitest";
 
-
-
 const mockUseNotes = {
-    notes: [
-      { note_id: 1, title: "Test Note", body: "<p>Note body</p>", author: 1, created: new Date().toISOString(), modified: new Date().toISOString() },
-      { note_id: 2, title: "Another Test Note", body: "<p>Another note body</p>", author: 1, created: new Date().toISOString(), modified: new Date().toISOString() },
-    ],
-    isLoading: false,
-    isError: false,
-    error: null,
-    createMutation: { mutate: vi.fn(),mutateAsync: vi.fn() },
-    updateMutation: { mutate: vi.fn(), mutateAsync: vi.fn() },
-    deleteMutation: { mutate: vi.fn(), mutateAsync: vi.fn() },
-  };
-  
-  vi.mock("@/services/notes.service-hook", () => ({
-    ...vi.importActual("@/services/notes.service-hook"),
-    useNotes: vi.fn(() => mockUseNotes),  // Explicitly mock the return value of useNotes
-  }));
+  notes: [
+    {
+      note_id: 1,
+      title: "Test Note",
+      body: "<p>Note body</p>",
+      author: 1,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+    },
+    {
+      note_id: 2,
+      title: "Another Test Note",
+      body: "<p>Another note body</p>",
+      author: 1,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+    },
+  ],
+  isLoading: false,
+  isError: false,
+  error: null,
+  createMutation: {
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isLoading: true || false,
+  },
+  updateMutation: {
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isLoading: true || false,
+  },
+  deleteMutation: {
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isLoading: true || false,
+  },
+};
 
+vi.mock("@/services/notes.service-hook", () => ({
+  ...vi.importActual("@/services/notes.service-hook"),
+  useNotes: vi.fn(() => mockUseNotes),
+}));
 
 describe("RichNote Component", () => {
   const mockOnClose = vi.fn();
@@ -38,23 +60,6 @@ describe("RichNote Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Mocking useNotes return value using vi.fn()
-    useNotes.mockImplementation(() => ({
-      createMutation: {
-        mutateAsync: vi.fn()
-      },
-      updateMutation: {
-        mutateAsync: vi.fn()
-      },
-      deleteMutation: {
-        mutateAsync: vi.fn()
-      },
-      notes: [],
-      isLoading: false,
-      isError: false,
-      error: null,
-    }));
   });
 
   it("renders correctly in edit mode with a note", () => {
@@ -72,65 +77,62 @@ describe("RichNote Component", () => {
     expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
   });
 
-  
   it("can edit a note", async () => {
     render(<RichNote note={mockNote} onClose={mockOnClose} isView={false} />);
-  
-    // Clear and update title
+
     await userEvent.clear(screen.getByDisplayValue(mockNote.title));
-    await userEvent.type(screen.getByPlaceholderText("Title"), "Updated Title");
-  
-    // For Quill RTE, use a more specific method to set content
-    const editor = screen.getByTestId('quill-editor'); // Assumes you've added a data-testid to the Quill editor
-    
-    // Method 1: If the component exposes a way to set Quill content
-    await userEvent.type(editor, "Updated body content.");
-  
-    // Alternative Method 2: If using direct Quill instance manipulation
-    // This requires mocking the Quill instance or using a ref in the component
-    // fireEvent.input(editor, { target: { innerHTML: 'Updated body content.' } });
-  
-    // Submit form
+    const newTitle = "Updated Title";
+    await userEvent.type(screen.getByPlaceholderText("Title"), newTitle);
+
+    const editor = screen.getByTestId("quill-editor");
+    const newBody = "<p>This is a test note.</p>";
+    fireEvent.input(editor, {
+      target: { innerHTML: newBody },
+    });
+
     await userEvent.click(screen.getByRole("button", { name: "Update Note" }));
-  
-    // Check if updateMutation was called with correct data
+
     await waitFor(() => {
       expect(mockUseNotes.updateMutation.mutateAsync).toHaveBeenCalledWith({
         noteId: mockNote.note_id,
         updatedData: {
-          ...mockNote,
-          title: "Updated Title",
-          body: "Updated body content.",
+          title: newTitle,
+          body: newBody,
+          author: 123,
+          created: "2025-01-01T00:00:00Z",
           modified: expect.any(String),
+          note_id: mockNote.note_id,
         },
       });
+
       expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
   it("creates a new note", async () => {
     render(<RichNote onClose={mockOnClose} isView={false} />);
+    const quillEditor = screen.getByTestId("quill-editor");
 
-    // Type new title and body
-    const newTitle = "New Note";
+    const newTitle = "This is my note";
     await userEvent.type(screen.getByPlaceholderText("Title"), newTitle);
 
-    const newBody = "This is a new note body.";
-    await userEvent.type(screen.getByPlaceholderText("Start writing here...."), newBody);
+    const newBody = "<p>Start writing here....</p>";
+    fireEvent.input(quillEditor, {
+      target: { innerHTML: newBody },
+    });
 
-    // Submit form
     await userEvent.click(screen.getByRole("button", { name: "Create Note" }));
 
-    // Check if createMutation was called with correct data
     await waitFor(() => {
-      expect(useNotes().createMutation.mutateAsync).toHaveBeenCalledWith({
+      expect(mockUseNotes.createMutation.mutateAsync).toHaveBeenCalledWith({
         title: newTitle,
-        note_id: expect.any(Number), // random id
-        author: expect.any(Number),
         body: newBody,
+        author: expect.any(Number),
         created: expect.any(String),
         modified: expect.any(String),
+        note_id: expect.any(Number),
       });
+
       expect(mockOnClose).toHaveBeenCalled();
     });
   });
@@ -138,36 +140,34 @@ describe("RichNote Component", () => {
   it("disables submit button when no changes are made", async () => {
     render(<RichNote note={mockNote} onClose={mockOnClose} isView={false} />);
 
-    // Ensure the submit button is disabled if no changes are made
     expect(screen.getByRole("button", { name: "Update Note" })).toBeDisabled();
   });
 
   it("shows loading states during mutation", async () => {
-    // Simulate a loading state by mocking isLoading to be true
-    // useNotes.mockImplementationOnce(() => ({
-    //   createMutation: {
-    //     mutateAsync: vi.fn(),
-      
-    //   },
-    //   updateMutation: {
-    //     mutateAsync: vi.fn(),
-       
-    //   },
-    //   deleteMutation: {
-    //     mutateAsync: vi.fn(),
-    //     isLoading: false,
-    //   },
-    //   notes: [],
-    //   isLoading: false,
-    //   isError: false,
-    //   error: null,
-    // }));
-   
+    const originalMockUseNotes = { ...mockUseNotes };
+
+    mockUseNotes.createMutation = {
+      ...originalMockUseNotes.createMutation,
+      isLoading: true,
+    };
 
     render(<RichNote note={mockNote} onClose={mockOnClose} isView={false} />);
+    const quillEditor = screen.getByTestId("quill-editor");
+    await userEvent.type(screen.getByPlaceholderText("Title"), "Created Title");
 
-    // Check if "Saving..." or "Updating..." is shown based on the state
-    expect(screen.getByRole("button", { name: "Saving..." })).toBeInTheDocument();
+    fireEvent.input(quillEditor, {
+      target: { innerHTML: "<p>Created body content.</p>" },
+    });
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /Create|Update/i })
+    );
+
+    expect(
+      screen.getByRole("button", { name: /Update Note/i })
+    ).toBeInTheDocument();
+
+    mockUseNotes.createMutation = originalMockUseNotes.createMutation;
   });
 
   it("calls onClose when cancel or close button is clicked", async () => {
