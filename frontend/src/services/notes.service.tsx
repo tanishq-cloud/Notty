@@ -25,7 +25,7 @@ interface RegisterCredentials extends LoginCredentials {
   full_name: string;
 }
 
-const API_BASE_URL = 'http://192.168.0.166:8000';
+const API_BASE_URL = 'http://192.168.0.193:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

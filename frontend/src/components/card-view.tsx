@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import RichNote from "./Editor/view-create";
 import { useNotes } from "@/services/notes.service-hook";
-import { IconFilePencil, IconTrashX, IconEye } from '@tabler/icons-react';
+import {  IconTrashX, IconEye } from '@tabler/icons-react';
 import {
   Dialog,
   DialogContent,
@@ -104,6 +104,8 @@ export default function NotesCardView({
               </p>
               <div className="flex justify-end gap-2">
                 <Button
+                name="delete"
+                data-testid="delete-button"
                   onClick={() => handleDeleteClick(note)}
                   variant="outline"
                   className="text-red-600"
@@ -112,6 +114,8 @@ export default function NotesCardView({
                 </Button>
 
                 <Button
+                name="view"
+                data-testid="view-button"
                   onClick={() => {
                     setSelectedNote(note);
                     setIsViewMode(true);
@@ -123,7 +127,8 @@ export default function NotesCardView({
                 </Button>
 
                 <Button
-                  
+                  name="edit"
+                  data-testid="edit-button"
                   onClick={() => {
                     setSelectedNote(note);
                     setIsViewMode(false);

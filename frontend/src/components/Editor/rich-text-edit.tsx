@@ -54,6 +54,7 @@ export default function RichTextEditor({
     <div className="border rounded-md">
       <div
         ref={editorRef}
+        data-testid="quill-editor"
         className="h-64 max-h-64 overflow-auto" 
       />
     </div>

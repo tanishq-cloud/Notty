@@ -36,7 +36,9 @@ function NotificationBar() {
             <div className="flex items-center justify-between space-x-6 w-full sm:w-auto">
               {authenticated && (
                 <div className="border-l border-gray-200 pl-6 sm:border-0 sm:pl-0">
-                  <Button onClick={() => setIsCreatingNote(true)}>
+                  <Button
+                  data-testid="create-button" 
+                  onClick={() => setIsCreatingNote(true)}>
                     Create New Note
                   </Button>
                 </div>
