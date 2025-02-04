@@ -23,7 +23,7 @@ async def create_user(user_data: UserCreateDTO, db: async_session = Depends(data
 
         if created_user is None:
             raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_409_CONFLICT,
             detail="User already exists"
         ) 
         # HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
@@ -31,6 +31,8 @@ async def create_user(user_data: UserCreateDTO, db: async_session = Depends(data
         return {"message": "User created successfully"}
 
     except Exception as e:
+        print(f"Error in token generation: {str(e)}")
+
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal Server Error: {str(e)}",
@@ -41,6 +43,8 @@ async def token(user: OAuth2PasswordRequestForm = Depends(), db: async_session =
     """Generates a JWT token for authentication"""
     try:
         user_dao = UserDAO(db)
+
+
         user_retrieved =await  user_dao.authenticate_user(user.username, user.password)
 
         if user_retrieved is None:
@@ -51,7 +55,7 @@ async def token(user: OAuth2PasswordRequestForm = Depends(), db: async_session =
         print("refresh_token",refresh_token)
         return {"access_token": access_token, "refresh_token":refresh_token,"token_type": "bearer","user_id":user_retrieved.id,"username":user_retrieved.username,"full_name":user_retrieved.full_name}
 
-    except jwt.PyJWTError:
+    except jwt.PyJWTError as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token generation failed") from e
 
     except Exception as e:

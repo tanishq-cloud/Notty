@@ -13,4 +13,6 @@ seaborn
 PyJWT
 passlib
 bcrypt 
-aiosqlite 
+aiosqlite
+pytest
+pytest-asyncio
