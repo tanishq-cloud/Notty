@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from models.model import Note 
 from dao.note_dao import NoteDAO  
 
-# Constants for testing
 TEST_TITLE = "Test Note"
 TEST_BODY = "This is a test note."
 TEST_USER_ID = 1
