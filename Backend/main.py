@@ -3,6 +3,9 @@ from fastapi import FastAPI, HTTPException;
 from fastapi.middleware.cors import CORSMiddleware;
 
 
+from db.database import create_table
+from routes import note, user
+
 app= FastAPI()
 
 origins =[
@@ -19,10 +22,14 @@ app.add_middleware(
      allow_headers=['*']
 
 )
-# app.include_router(test.router)/
+@app.on_event("startup")
+async def start_up_event():
+    await create_table()
+
+app.include_router(note.router,tags=["notes"])
+app.include_router(user.router,tags=["User"])
+
 # app.include_router(secure_routes.router)
 # app.include_router(secure_routes.router)
 
 
-# if __name__=="__main__":
-#      uvicorn.run(app,host="0.0.0.0",port=3002)

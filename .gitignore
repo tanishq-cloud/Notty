@@ -1,3 +1,5 @@
 /Backend/.env
 /Backend/Notes
 .vscode/
+**/__pycache__/
+Backend/Notes.db
