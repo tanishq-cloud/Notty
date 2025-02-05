@@ -17,6 +17,8 @@ function NotificationBar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user_id");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("full_name");
     triggerAuthChange();
     navigate({ to: "/login" });
   };
