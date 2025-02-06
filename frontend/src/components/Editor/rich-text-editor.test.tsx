@@ -34,18 +34,7 @@ describe("RichTextEditor Component", () => {
     expect(editorContainer).toBeInTheDocument();
   });
 
-  it("calls onChange when content changes", () => {
-    const mockOnChange = vi.fn();
-    
-    const { container } = render(<RichTextEditor onChange={mockOnChange} />);
-    const editorContainer = screen.getByTestId('quill-editor');
-    const mockQuillInstance = {
-      root: { innerHTML: '<p>New content</p>' },
-    };
   
-    mockOnChange('<p>New content</p>');
-    expect(mockOnChange).toHaveBeenCalledWith('<p>New content</p>');
-  });
   it("disables editor when disabled prop is true", () => {
     render(<RichTextEditor disabled={true} />);
     

@@ -6,7 +6,7 @@ import { Note } from '@/interface/Note';
 export const useNotes = () => {
     const queryClient = useQueryClient();
 
-    const { data: notes, isLoading, isError, error } = useQuery({
+    const { data: notes, isLoading, isError, error, isFetching } = useQuery({
         queryKey: ['notes'],
         queryFn: getNotes,
     });
@@ -18,6 +18,7 @@ export const useNotes = () => {
         },
         onError: (error) => {
             console.error('Failed to create note:', error);
+            throw new Error('Unable to create the note. Please try again later');
             
         }
     });
@@ -30,7 +31,7 @@ export const useNotes = () => {
         },
         onError: (error) => {
             console.error('Failed to update note:', error);
-            // Handle error
+            throw new Error('Unable to update the note. Please try again later');
         }
     });
 
@@ -41,13 +42,14 @@ export const useNotes = () => {
         },
         onError: (error) => {
             console.error('Failed to delete note:', error);
-            // Handle error
+            throw new Error('Unable to delete the note. Please try again later.');
         }
     });
 
     return { 
         notes, 
-        isLoading, 
+        isLoading,
+        isFetching, 
         isError, 
         error,
         createMutation, 

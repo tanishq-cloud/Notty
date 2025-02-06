@@ -28,9 +28,16 @@ function LoginPage() {
       triggerAuthChange();
       navigate({ to: '/list' });
     } catch (err) {
-      setError('Invalid username or password');
+      // Handle errors
+      if (err instanceof Error) {
+        setError(err.message); 
+        toast.error(err.message); 
+      } else {
+        setError('An unexpected error occurred.');
+        toast.error('An unexpected error occurred.');
+      }
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); 
     }
   };
 

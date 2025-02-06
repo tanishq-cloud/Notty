@@ -25,7 +25,7 @@ interface RegisterCredentials extends LoginCredentials {
   full_name: string;
 }
 
-const API_BASE_URL = 'http://192.168.0.193:8000';
+const API_BASE_URL = 'http://127.0.0.1:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -130,12 +130,30 @@ export const login = async (credentials: LoginCredentials) => {
   formData.append('username', credentials.username);
   formData.append('password', credentials.password);
 
-  const response = await api.post<AuthResponse>('/token/', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  try {
+    const response = await api.post<AuthResponse>('/token/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
 
-  storeAuthData(response.data);
-  return response.data;
+    // Store authentication data (e.g., tokens)
+    storeAuthData(response.data);
+
+    return response.data;
+  } catch (err) {
+    // Handle API errors
+    if (axios.isAxiosError(err)) {
+      // If the error is an Axios error, extract the response data
+      if (err.response) {
+        const errorMessage = err.response.data?.detail || 'Invalid username or password';
+        throw new Error(errorMessage); // Throw a meaningful error message
+      } else if (err.request) {
+        throw new Error('No response received from the server. Please check your connection.');
+      }
+    } else {
+      // Fallback for non-Axios errors
+      throw new Error('An unexpected error occurred. Please try again later.');
+    }
+  }
 };
 
 export const logout = () => {

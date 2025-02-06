@@ -1,7 +1,8 @@
 
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-
+import { Suspense } from "react";
+import LoadingScreen from "./components/loading-screen";
 import {ToastContainer} from 'react-toastify';
 
 const router = createRouter({ routeTree });
@@ -11,12 +12,10 @@ function App() {
 
   return (
     <div >
-
-      
-      
-            <RouterProvider router={router} />
-          
-
+      <Suspense fallback={<LoadingScreen />} >
+      <RouterProvider router={router} />
+      </Suspense>
+            
       
       <ToastContainer 
         position="top-right"
