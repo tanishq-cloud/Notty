@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.50.1",
     "@tanstack/router-devtools": "^1.97.23",
     "@tanstack/router-plugin": "^1.97.23",
     "@testing-library/jest-dom": "^6.6.3",
