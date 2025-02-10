@@ -1,7 +1,11 @@
 // Import the generated route tree
 import { routeTree } from "../routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createRouter, createMemoryHistory } from "@tanstack/react-router";
+import {
+  RouterProvider,
+  createRouter,
+  createMemoryHistory,
+} from "@tanstack/react-router";
 import { render } from "@testing-library/react";
 
 export function renderRoute(route: string) {
@@ -10,9 +14,7 @@ export function renderRoute(route: string) {
       queries: {
         retry: false,
       },
-      
     },
-    
   });
 
   const memoryHistory = createMemoryHistory({
@@ -25,9 +27,9 @@ export function renderRoute(route: string) {
     context: {
       queryClient: testQueryClient,
     },
-    defaultPreload: "intent",           // not sure if I need this or the next line
+    defaultPreload: "intent", // not sure if I need this or the next line
     defaultPreloadStaleTime: 0,
-    history: memoryHistory,           // also not sure if this is necessary but probably is
+    history: memoryHistory, // also not sure if this is necessary but probably is
   });
 
   const { rerender, ...result } = render(
@@ -38,7 +40,8 @@ export function renderRoute(route: string) {
 
   return {
     ...result,
-    rerender: () =>                // not exactly sure what this rerender property or function is or if I need it
+    rerender: () =>
+      // not exactly sure what this rerender property or function is or if I need it
       rerender(
         <QueryClientProvider client={testQueryClient}>
           <RouterProvider router={router} />

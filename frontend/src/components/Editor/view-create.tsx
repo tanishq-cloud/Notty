@@ -18,12 +18,12 @@ export default function RichNote({
   const { createMutation, updateMutation } = useNotes();
   const [title, setTitle] = useState(note?.title || "");
   const [body, setBody] = useState(note?.body || "Start writing here....");
-  
-  
-  const [originalTitle, setOriginalTitle] = useState(note?.title || "");
-  const [originalBody, setOriginalBody] = useState(note?.body || "Start writing here....");
 
-  
+  const [originalTitle, setOriginalTitle] = useState(note?.title || "");
+  const [originalBody, setOriginalBody] = useState(
+    note?.body || "Start writing here....",
+  );
+
   useEffect(() => {
     if (note) {
       setOriginalTitle(note.title);
@@ -31,7 +31,6 @@ export default function RichNote({
     }
   }, [note]);
 
-  
   const hasChanges = title !== originalTitle || body !== originalBody;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,9 +93,9 @@ export default function RichNote({
               <Button
                 type="submit"
                 disabled={
-                  createMutation.isPending || 
-                  updateMutation.isPending || 
-                  (note && !hasChanges) 
+                  createMutation.isPending ||
+                  updateMutation.isPending ||
+                  (note && !hasChanges)
                 }
               >
                 {createMutation.isPending || updateMutation.isPending

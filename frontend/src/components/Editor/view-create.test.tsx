@@ -160,11 +160,11 @@ describe("RichNote Component", () => {
     });
 
     await userEvent.click(
-      screen.getByRole("button", { name: /Create|Update/i })
+      screen.getByRole("button", { name: /Create|Update/i }),
     );
 
     expect(
-      screen.getByRole("button", { name: /Update Note/i })
+      screen.getByRole("button", { name: /Update Note/i }),
     ).toBeInTheDocument();
 
     mockUseNotes.createMutation = originalMockUseNotes.createMutation;

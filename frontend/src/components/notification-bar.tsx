@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { useNavigate, Link } from "@tanstack/react-router";
 //import { isAuthenticated } from "@/services/notes.service";
 import { useAuth } from "@/hooks/use-auth";
-import { triggerAuthChange } from "@/hooks/use-auth"; 
+import { triggerAuthChange } from "@/hooks/use-auth";
 function NotificationBar() {
   const [isCreatingNote, setIsCreatingNote] = useState(false);
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ function NotificationBar() {
             <div className="flex items-center space-x-2">
               <img src="/brain.svg" alt="Brain Icon" className="w-10 h-10" />
               <h1 className="text-xl font-bold text-gray-800 hover:text-gray-600 transition-colors">
-               <Link to={"/"}> Notty</Link>  {/* ৻(  •̀ ᗜ •́  ৻) */}
+                <Link to={"/"}> Notty</Link> {/* ৻(  •̀ ᗜ •́  ৻) */}
               </h1>
             </div>
 
@@ -37,8 +37,9 @@ function NotificationBar() {
               {authenticated && (
                 <div className="border-l border-gray-200 pl-6 sm:border-0 sm:pl-0">
                   <Button
-                  data-testid="create-button" 
-                  onClick={() => setIsCreatingNote(true)}>
+                    data-testid="create-button"
+                    onClick={() => setIsCreatingNote(true)}
+                  >
                     Create New Note
                   </Button>
                 </div>

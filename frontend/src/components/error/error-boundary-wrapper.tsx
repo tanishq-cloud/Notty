@@ -1,7 +1,7 @@
 // components/ErrorBoundaryWrapper.tsx
-import React from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-import ErrorSpinner from './error-screen';
+import React from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorSpinner from "./error-screen";
 
 interface ErrorBoundaryWrapperProps {
   children: React.ReactNode;

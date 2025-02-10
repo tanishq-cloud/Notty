@@ -50,9 +50,9 @@ export default function NotesPage() {
     actualDuration: number,
     baseDuration: number,
     startTime: number,
-    commitTime: number
+    commitTime: number,
   ) => void;
-  
+
   // Example usage:
   const onRender: OnRenderCallback = (
     id,
@@ -60,17 +60,17 @@ export default function NotesPage() {
     actualDuration,
     baseDuration,
     startTime,
-    commitTime
+    commitTime,
   ) => {
     const humanReadableStartTime = new Date(startTime).toLocaleString();
-  const humanReadableCommitTime = new Date(commitTime).toLocaleString();
+    const humanReadableCommitTime = new Date(commitTime).toLocaleString();
 
-  console.log(`Component ID: ${id}`);
-  console.log(`Phase: ${phase}`);
-  console.log(`Actual Duration: ${actualDuration}ms`);
-  console.log(`Base Duration: ${baseDuration}ms`);
-  console.log(`Start Time: ${humanReadableStartTime}`);
-  console.log(`Commit Time: ${humanReadableCommitTime}`);
+    console.log(`Component ID: ${id}`);
+    console.log(`Phase: ${phase}`);
+    console.log(`Actual Duration: ${actualDuration}ms`);
+    console.log(`Base Duration: ${baseDuration}ms`);
+    console.log(`Start Time: ${humanReadableStartTime}`);
+    console.log(`Commit Time: ${humanReadableCommitTime}`);
   };
 
   return (

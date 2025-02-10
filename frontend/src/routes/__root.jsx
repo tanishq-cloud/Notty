@@ -12,16 +12,14 @@ export const Route = createRootRoute({
           <NotificationBar />
         </div>
 
-        
         <div className="flex-1 flex flex-col justify justify-center mt-16">
           <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <Suspense fallback={<LoadingScreen />} >
-            <Outlet />
-          </Suspense>
+            <Suspense fallback={<LoadingScreen />}>
+              <Outlet />
+            </Suspense>
           </main>
         </div>
 
-      
         <Footer />
       </div>
     );

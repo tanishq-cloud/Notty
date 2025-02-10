@@ -9,13 +9,11 @@ const override: CSSProperties = {
 
 function LoadingScreen() {
   const loading = true;
-  let color = "#ffffff";
+  const color = "#ffffff";
 
   return (
     <div className="sweet-loading">
-        <div>
-            Loading.......
-        </div>
+      <div>Loading.......</div>
       <PacmanLoader
         color={color}
         loading={loading}

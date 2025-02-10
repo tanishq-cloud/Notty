@@ -8,7 +8,6 @@ A React application built with Vite, TypeScript, shadcn/ui, it is a basic notes 
 - 🎯 TypeScript for type safety
 - 🎨 shadcn/ui for beautiful, accessible components
 
-
 ## Prerequisites
 
 - Node.js (version 16 or higher)
@@ -17,15 +16,16 @@ A React application built with Vite, TypeScript, shadcn/ui, it is a basic notes 
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/tanishq-cloud/Notty.git
 cd Hoo
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 # or
 yarn install
 ```
-

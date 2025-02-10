@@ -3,20 +3,20 @@ import { initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
 
 i18n
-  .use(HttpApi) 
+  .use(HttpApi)
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
-    lng: "en", 
+    lng: "en",
     interpolation: {
-      escapeValue: false, 
+      escapeValue: false,
     },
     backend: {
-      loadPath: "/locales/{{lng}}.json", 
+      loadPath: "/locales/{{lng}}.json",
     },
-    debug: true, 
+    debug: true,
     react: {
-      useSuspense: false, 
+      useSuspense: false,
     },
   });
 

@@ -1,13 +1,15 @@
-import { ClimbingBoxLoader } from 'react-spinners';
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { ClimbingBoxLoader } from "react-spinners";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const ErrorSpinner = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <Alert variant="destructive" className="mb-8 max-w-md">
         <AlertCircle className="h-4 w-4" />
-        <AlertTitle className="text-xl">Oops! Something went wrong 😕</AlertTitle>
+        <AlertTitle className="text-xl">
+          Oops! Something went wrong 😕
+        </AlertTitle>
         <AlertDescription className="text-lg">
           We're working on fixing this issue! Please try again later 🛠️
         </AlertDescription>
@@ -21,9 +23,7 @@ const ErrorSpinner = () => {
       </div>
 
       <div className="mt-8 text-center">
-        <p className="text-gray-500">
-          Need help? Pray to god.
-        </p>
+        <p className="text-gray-500">Need help? Pray to god.</p>
       </div>
     </div>
   );

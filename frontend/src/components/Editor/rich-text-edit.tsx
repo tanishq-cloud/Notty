@@ -39,12 +39,12 @@ export default function RichTextEditor({
       });
 
       if (initialContent) {
-        quillInstance.current.root.innerHTML = initialContent; 
+        quillInstance.current.root.innerHTML = initialContent;
       }
 
       if (!disabled && onChange) {
         quillInstance.current.on("text-change", () => {
-          onChange(quillInstance.current!.root.innerHTML); 
+          onChange(quillInstance.current!.root.innerHTML);
         });
       }
     }
@@ -55,7 +55,7 @@ export default function RichTextEditor({
       <div
         ref={editorRef}
         data-testid="quill-editor"
-        className="h-64 max-h-64 overflow-auto" 
+        className="h-64 max-h-64 overflow-auto"
       />
     </div>
   );

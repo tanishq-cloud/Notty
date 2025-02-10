@@ -1,11 +1,11 @@
 // src/utils/authMiddleware.ts
-import { redirect } from '@tanstack/react-router';
+import { redirect } from "@tanstack/react-router";
 
 export function authMiddleware() {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
     throw redirect({
-      to: '/login',
+      to: "/login",
       search: {
         redirect: window.location.pathname,
       },

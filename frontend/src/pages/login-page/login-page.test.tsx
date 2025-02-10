@@ -5,7 +5,6 @@ import { vi } from "vitest";
 import * as authService from "@/services/notes.service";
 import { useNavigate } from "@tanstack/react-router";
 
-
 describe("Login Page", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -14,7 +13,9 @@ describe("Login Page", () => {
   });
 
   it("shows error message for invalid login", async () => {
-    vi.spyOn(authService, "login").mockRejectedValue(new Error("Invalid username or password"));
+    vi.spyOn(authService, "login").mockRejectedValue(
+      new Error("Invalid username or password"),
+    );
 
     renderRoute("/login");
 
@@ -29,12 +30,22 @@ describe("Login Page", () => {
     await userEvent.click(signInButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Invalid username or password/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Invalid username or password/i),
+      ).toBeInTheDocument();
     });
   });
 
   it("logs in successfully and redirects to notes list", async () => {
-    vi.spyOn(authService, "login").mockResolvedValue({ access_token: "mock-token", user_id: 1, full_name: "modk-name" , refresh_token: "mock-refresh" });
+    const mockLogin = vi.spyOn(authService, "login").mockResolvedValue({
+      access_token: "mock-token",
+      user_id: 1,
+      full_name: "mock-name",
+      refresh_token: "mock-refresh",
+    });
+
+    const mockNavigate = vi.fn();
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 
     renderRoute("/login");
 
@@ -47,10 +58,16 @@ describe("Login Page", () => {
     await userEvent.type(usernameInput, "testuser");
     await userEvent.type(passwordInput, "password123");
     await userEvent.click(signInButton);
-    expect(signInButton).toBeInTheDocument();
+
+    // Check if the login function is called
+    expect(mockLogin).toHaveBeenCalledWith({
+      username: "testuser",
+      password: "password123",
+    });
+
     screen.debug();
     await waitFor(() => {
-      expect(window.location.pathname).toBe("/");
+      expect(mockNavigate).toHaveBeenCalledWith({ to: "/list" });
     });
   });
 
@@ -63,8 +80,12 @@ describe("Login Page", () => {
     await userEvent.click(signInButton);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText(/Username/i)).toHaveAttribute("required");
-      expect(screen.getByPlaceholderText(/Password/i)).toHaveAttribute("required");
+      expect(screen.getByPlaceholderText(/Username/i)).toHaveAttribute(
+        "required",
+      );
+      expect(screen.getByPlaceholderText(/Password/i)).toHaveAttribute(
+        "required",
+      );
     });
   });
 
@@ -87,18 +108,22 @@ describe("Login Page", () => {
     const mockNavigate = vi.fn();
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 
-  renderRoute("/login");
+    renderRoute("/login");
 
-  const signUpButton = await screen.findByRole("button", { name: /sign up/i });
-  await userEvent.click(signUpButton);
+    const signUpButton = await screen.findByRole("button", {
+      name: /sign up/i,
+    });
+    await userEvent.click(signUpButton);
 
-  await waitFor(() => {
-    expect(mockNavigate).toHaveBeenCalledWith({ to : "/register" });
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith({ to: "/register" });
+    });
   });
-});
 
   it("disables 'Sign in' button when loading", async () => {
-    vi.spyOn(authService, "login").mockImplementation(() => new Promise(() => {}));
+    vi.spyOn(authService, "login").mockImplementation(
+      () => new Promise(() => {}),
+    );
 
     renderRoute("/login");
 

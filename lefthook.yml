@@ -1,0 +1,19 @@
+# Lefthook Configuration File
+
+# Pre-commit hooks 
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      run: cd frontend && npm run format
+      tags:
+        - frontend
+
+# Pre-push hooks
+pre-push:
+  commands:
+    frontend-tests:
+      run: cd frontend && npm run test
+      tags:
+        - frontend
+ 

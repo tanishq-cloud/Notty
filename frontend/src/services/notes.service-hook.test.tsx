@@ -1,13 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useNotes } from './notes.service-hook';
-import * as notesService from '@/services/notes.service';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useNotes } from "./notes.service-hook";
+import * as notesService from "@/services/notes.service";
 
 // Mock the notes service
-vi.mock('@/services/notes.service');
+vi.mock("@/services/notes.service");
 
-describe('useNotes hook', () => {
+describe("useNotes hook", () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
@@ -22,17 +22,15 @@ describe('useNotes hook', () => {
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
   // Test Fetching Notes
-  it('should fetch notes successfully', async () => {
+  it("should fetch notes successfully", async () => {
     // Prepare mock data
     const mockNotes = [
-      { id: 1, title: 'Test Note 1', content: 'Content 1' },
-      { id: 2, title: 'Test Note 2', content: 'Content 2' }
+      { id: 1, title: "Test Note 1", content: "Content 1" },
+      { id: 2, title: "Test Note 2", content: "Content 2" },
     ];
 
     // Mock the getNotes service method
@@ -53,15 +51,16 @@ describe('useNotes hook', () => {
   });
 
   // Test Creating a Note
-  it('should create a note successfully', async () => {
+  it("should create a note successfully", async () => {
     // Prepare mock data
-    const newNote = { note_id: 1,
-        title: "Test Note",
-        body: "<p>Note body</p>",
-        author: 1,
-        created: new Date().toISOString(),
-        modified: new Date().toISOString(), };
-    
+    const newNote = {
+      note_id: 1,
+      title: "Test Note",
+      body: "<p>Note body</p>",
+      author: 1,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+    };
 
     // Mock the createNote service method
     vi.mocked(notesService.createNote).mockResolvedValue(newNote);
@@ -81,20 +80,26 @@ describe('useNotes hook', () => {
   });
 
   // Test Updating a Note
-  it('should update a note successfully', async () => {
+  it("should update a note successfully", async () => {
     // Prepare mock data
-    const existingNote = { id: 1, title: 'Original Title', content: 'Original Content' };
-    const updatedData = { title: 'Updated Title' };
+    const existingNote = {
+      id: 1,
+      title: "Original Title",
+      content: "Original Content",
+    };
+    const updatedData = { title: "Updated Title" };
 
     // Mock the updateNote service method
     vi.mocked(notesService.updateNote).mockResolvedValue({
       ...existingNote,
-      ...updatedData
+      ...updatedData,
     });
-    vi.mocked(notesService.getNotes).mockResolvedValue([{
-      ...existingNote,
-      ...updatedData
-    }]);
+    vi.mocked(notesService.getNotes).mockResolvedValue([
+      {
+        ...existingNote,
+        ...updatedData,
+      },
+    ]);
 
     // Render the hook
     const { result } = renderHook(() => useNotes(), { wrapper });
@@ -102,25 +107,30 @@ describe('useNotes hook', () => {
     // Perform update mutation
     await result.current.updateMutation.mutateAsync({
       noteId: existingNote.id,
-      updatedData
+      updatedData,
     });
 
     // Verify mutation success
     await waitFor(() => {
-      expect(notesService.updateNote).toHaveBeenCalledWith(existingNote.id, updatedData);
+      expect(notesService.updateNote).toHaveBeenCalledWith(
+        existingNote.id,
+        updatedData,
+      );
       expect(result.current.updateMutation.isSuccess).toBe(true);
     });
   });
 
   // Test Deleting a Note
-  it('should delete a note successfully', async () => {
+  it("should delete a note successfully", async () => {
     // Prepare mock data
-    const noteToDelete = { note_id: 1,
-        title: "Test Note",
-        body: "<p>Note body</p>",
-        author: 1,
-        created: new Date().toISOString(),
-        modified: new Date().toISOString(), };
+    const noteToDelete = {
+      note_id: 1,
+      title: "Test Note",
+      body: "<p>Note body</p>",
+      author: 1,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+    };
 
     // Mock the deleteNote service method
     vi.mocked(notesService.deleteNote).mockResolvedValue(undefined);
@@ -134,15 +144,17 @@ describe('useNotes hook', () => {
 
     // Verify mutation success
     await waitFor(() => {
-      expect(notesService.deleteNote).toHaveBeenCalledWith(noteToDelete.note_id);
+      expect(notesService.deleteNote).toHaveBeenCalledWith(
+        noteToDelete.note_id,
+      );
       expect(result.current.deleteMutation.isSuccess).toBe(true);
     });
   });
 
   // Test Error Handling
-  it('should handle errors when creating a note', async () => {
+  it("should handle errors when creating a note", async () => {
     // Prepare mock error
-    const mockError = new Error('Creation failed');
+    const mockError = new Error("Creation failed");
 
     // Mock the createNote service method to throw an error
     vi.mocked(notesService.createNote).mockRejectedValue(mockError);
@@ -152,12 +164,14 @@ describe('useNotes hook', () => {
 
     // Attempt to create note and catch error
     try {
-      await result.current.createMutation.mutateAsync({ note_id: 1,
+      await result.current.createMutation.mutateAsync({
+        note_id: 1,
         title: "Failed Note",
         body: "<p>Note body</p>",
         author: 1,
         created: new Date().toISOString(),
-        modified: new Date().toISOString(), });
+        modified: new Date().toISOString(),
+      });
     } catch (error) {
       expect(error).toEqual(mockError);
     }
